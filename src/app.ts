@@ -3,6 +3,7 @@ import * as express from 'express';
 import * as mongoose from 'mongoose';
 import Controller from './interfaces/controller.interface';
 import * as cookieParser from 'cookie-parser';  
+import ProblemWithDatabaseConnection from './exceptions/ProblemWithDatabaseConnection';
  
 class App {
   public app: express.Application;
@@ -38,7 +39,13 @@ class App {
       MONGO_PASSWORD,
       MONGO_PATH,
     } = process.env;
-    mongoose.connect(`mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}${MONGO_PATH}`, { useNewUrlParser: true });
+    mongoose.connect(`mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}${MONGO_PATH}`,{ useNewUrlParser: true }).then(
+      ()=>{
+        console.log("connected to mongoDB")},
+      (err)=>{
+        console.log("err",err);
+        throw new ProblemWithDatabaseConnection();
+      });
   }
 }
  

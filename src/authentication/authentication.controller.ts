@@ -26,12 +26,12 @@ class AuthenticationController implements Controller {
 
   private registration = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
     const userData: CreateUserDto = request.body;
+    console.log(request.body + " " + userData);
     try {
       const {
         cookie,
         user,
       } = await this.authenticationService.register(userData);
-      response.setHeader('Set-Cookie', [cookie]);
       response.send(user);
     } catch (error) {
       next(error);
@@ -40,14 +40,15 @@ class AuthenticationController implements Controller {
 
   private loggingIn = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
     const logInData: LogInDto = request.body;
-    const user = await this.user.findOne({ email: logInData.email });
+    let user = await this.user.findOne({ email: logInData.email });
     if (user) {
       const isPasswordMatching = await bcrypt.compare(logInData.password, user.password);
       if (isPasswordMatching) {
         user.password = undefined;
         const tokenData = this.authenticationService.createToken(user);
-        response.setHeader('Set-Cookie', [this.authenticationService.createCookie(tokenData)]);
-        response.send(user);
+        //response.setHeader('Set-Cookie', [this.authenticationService.createCookie(tokenData)]);
+        let data = {user: user, token: tokenData};
+        response.send(data);
       } else {
         next(new WrongCredentialsException());
       }
