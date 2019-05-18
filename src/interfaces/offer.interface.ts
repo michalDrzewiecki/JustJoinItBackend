@@ -1,5 +1,5 @@
-import Technology from "static-data/technology.interface";
-import User from "user/user.interface";
+import Technology from "interfaces/technology.interface";
+import User from "interfaces/user.interface";
 
 export interface Offer{
     companyName: string,

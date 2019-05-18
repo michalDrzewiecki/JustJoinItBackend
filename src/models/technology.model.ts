@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import Technology from './technology.interface';
+import Technology from '../interfaces/technology.interface';
 
 export const technologySchema = new mongoose.Schema({
   name: String,

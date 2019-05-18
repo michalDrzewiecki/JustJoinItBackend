@@ -13,6 +13,7 @@
     "envalid": "^4.1.4",
     "express": "^4.16.4",
     "jsonwebtoken": "^8.4.0",
+    "lite-server": "^2.4.0",
     "mongoose": "5.4.2"
   },
   "devDependencies": {

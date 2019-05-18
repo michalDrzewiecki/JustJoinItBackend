@@ -4,8 +4,8 @@ import UserWithThatEmailAlreadyExistsException from '../exceptions/UserWithThatE
 import DataStoredInToken from '../interfaces/dataStoredInToken';
 import TokenData from '../interfaces/tokenData.interface';
 import CreateUserDto from '../user/user.dto';
-import User from '../user/user.interface';
-import userModel from './../user/user.model';
+import User from '../interfaces/user.interface';
+import userModel from '../models/user.model';
 
 class AuthenticationService {
   public user = userModel;
@@ -21,21 +21,13 @@ class AuthenticationService {
       ...userData,
       password: hashedPassword,
     });
-    user.password = undefined;
-    const tokenData = this.createToken(user);
-    const cookie = this.createCookie(tokenData);
     return {
-      cookie,
-      user,
+      user
     };
-  }
-  
-  public createCookie(tokenData: TokenData) {
-    return `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`;
   }
 
   public createToken(user: User): TokenData {
-    const expiresIn = 60 * 60;
+    const expiresIn = 24 * 60 * 60;
     const secret = process.env.JWT_SECRET;
     const dataStoredInToken: DataStoredInToken = {
       _id: user._id,

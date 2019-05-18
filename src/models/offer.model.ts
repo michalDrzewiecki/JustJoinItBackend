@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import Offer from './offer.interface';
+import Offer from '../interfaces/offer.interface';
 
 const offerSchema = new mongoose.Schema({
     companyName: String,

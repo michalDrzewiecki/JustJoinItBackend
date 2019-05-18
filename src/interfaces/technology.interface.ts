@@ -1,7 +1,7 @@
-interface Technology {
+export interface Technology {
+    _id: string;
     name: string;
     isHidden: boolean;
     color: string;
   }
   
-  export default Technology;
