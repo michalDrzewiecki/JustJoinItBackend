@@ -9,6 +9,7 @@ import userModel from '../models/user.model';
 import { DatabaseRequest } from 'interfaces/databaseRequest.interface';
 import { MyParams } from './enums';
 import { Technology } from 'interfaces/technology.interface';
+import { UpdateOfferDto } from './update-offer.dto';
 
 class StaticDataController implements Controller {
   public path = '/staticData';
@@ -23,6 +24,7 @@ class StaticDataController implements Controller {
   private initializeRoutes() {
     this.router.get(`${this.path}/technologies`, this.technologies);
     this.router.post(`${this.path}/offers`, this.offers);
+    this.router.post(`${this.path}/update`, this.update);
   }
 
   private technologies = async(request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -38,8 +40,8 @@ class StaticDataController implements Controller {
   private offers = async(request: express.Request, response: express.Response, next: express.NextFunction) => {
     let params: string[] = request.body;
     let databaseRequest: DatabaseRequest = {};
-    if(request.cookies[this.cookie] != null){
-      let userID = await this.checkToken(this.cookie, request);
+    if(params.length > 4){
+      let userID = await this.checkToken(params[4]);
       if(userID != ""){
         databaseRequest["$or"] = [{isHidden: false }, {author: userID}];
       }
@@ -68,7 +70,6 @@ class StaticDataController implements Controller {
       databaseRequest["salary.lowerLimit"] = {$gte: +params[MyParams.salary]};
     }
     try{
-      console.log(databaseRequest);
         offerModel.find(databaseRequest)
           .populate('author', '-password -email -_id')
           .populate('requiredSkills.technology', '-_id -isHidden')
@@ -79,11 +80,28 @@ class StaticDataController implements Controller {
       next(new ProblemWithDatabaseConnection());
     }
   }
+
+  private update = async(request: express.Request, response: express.Response, next: express.NextFunction) => {
+    let offerToUpdate: UpdateOfferDto = request.body;
+    if(offerToUpdate != null){
+      try{
+        offerModel.findOneAndUpdate({routingTag: offerToUpdate.routingTag},{
+          isAddressTransformed: true,
+          yCoordinate: offerToUpdate.yCoordinate,
+          xCoordinate: offerToUpdate.xCoordinate }).then(()=>{
+            response.send(offerToUpdate);
+          });
+    }catch(error){
+      next(new ProblemWithDatabaseConnection());
+    }
+    }
+  }
  
-  private async checkToken(cookie: string, request: express.Request): Promise<string>{
+
+  private async checkToken(cookie: string): Promise<string>{
     const secret = process.env.JWT_SECRET;
       try {
-        const verificationResponse = jwt.verify(request.cookies[this.cookie], secret) as DataStoredInToken;
+        const verificationResponse = jwt.verify(cookie, secret) as DataStoredInToken;
         const id = verificationResponse._id;
         const user = await userModel.findById(id);
         if (user) {

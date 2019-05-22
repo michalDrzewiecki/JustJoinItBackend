@@ -17,7 +17,10 @@ export interface Offer{
     requiredSkills: {technology: Technology, level: number}[],
     insertionDate: Date, 
     author: User,
-    isHidden: boolean
+    isHidden: boolean,
+    isAddressTransformed: boolean,
+    yCoordinate: number,
+    xCoordinate: number
 }
 
   

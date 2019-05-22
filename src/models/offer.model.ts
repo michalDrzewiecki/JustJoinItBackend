@@ -17,7 +17,10 @@ const offerSchema = new mongoose.Schema({
     requiredSkills: [{technology: {type: mongoose.Schema.Types.ObjectId, ref: 'Technology'}, level: Number}],
     insertionDate: Date, 
     author: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    isHidden: Boolean
+    isHidden: Boolean, 
+    isAddressTransformed: Boolean,
+    yCoordinate: Number,
+    xCoordinate: Number
 });
 
 const offerModel = mongoose.model<Offer & mongoose.Document>('Offer', offerSchema);
